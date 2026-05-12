@@ -5,7 +5,7 @@ description: Gap analysis and transition overview for adding post-quantum crypto
 
 This page summarizes the principal specification gaps that would need to be addressed to support post-quantum cryptography (PQC) in the PIV environment, with particular focus on ML-DSA for digital signature operations and ML-KEM for key establishment.
 
-The current PIV specifications are structured around classical public-key mechanisms, primarily RSA, ECDSA, and ECDH. As a result, PQC support is not limited to the addition of new algorithms. It is also likely to require coordinated updates to the PIV key model, command semantics, public-key encodings, certificate and data object definitions, and potentially authentication and secure messaging mechanisms.
+The current PIV specifications are structured around classical public-key mechanisms, primarily RSA, ECDSA, and ECDH. As a result, PQC support is not limited to the addition of new algorithms. It is also likely to require coordinated updates to the PIV key model, command semantics, public-key encodings, certificate and data object definitions, and, potentially, authentication and secure messaging mechanisms.
 
 :::{note}
 This overview is intended as a working gap analysis to frame draft development across [SP 800-78](./800-78/SP800-78.md), [SP 800-73 Part 1](./800-73pt1/SP800-73pt1.md), and [SP 800-73 Part 2](./800-73pt2/SP800-73pt2.md). It identifies areas likely to require specification updates; it does not resolve all design questions.
@@ -72,7 +72,7 @@ The current PIV authentication model is based on classical challenge-response si
 
 ### 7. Secure Messaging
 
-Current secure messaging mechanisms are based on ECC and related certificate structures. If PQC support is extended to secure messaging, substantial additional specification work would be required in both [SP 800-73 Part 2](./800-73pt2/SP800-73pt2.md) and related certificate and signer object definitions in [SP 800-73 Part 1](./800-73pt1/SP800-73pt1.md). This area may be addressed separately from initial support for PQC credentials and cryptographic operations.
+Current secure messaging mechanisms are based on ECC and related certificate structures. If PQC support is extended to secure messaging, substantial additional specification work would be required in both [SP 800-73 Part 2](./800-73pt2/SP800-73pt2.md) and related certificate and signed object definitions in [SP 800-73 Part 1](./800-73pt1/SP800-73pt1.md). This area may be addressed separately from initial support for PQC credentials and cryptographic operations.
 
 ## Primary Specification Changes
 
