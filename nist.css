@@ -1,0 +1,212 @@
+/* ============================================================
+   NIST TopNav: force black background (override Tailwind)
+   ============================================================ */
+.myst-top-nav {
+  background-color: #000 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+.myst-top-nav,
+.myst-top-nav a,
+.myst-top-nav button,
+.myst-top-nav .myst-top-nav-item a {
+  color: #fff !important;
+}
+
+/* Logo image: no white bg needed on black nav */
+.myst-home-link-logo {
+  background: transparent !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+}
+
+/* ============================================================
+   NIST Footer (adapted from pages.nist.gov/nist-header-footer)
+   ============================================================ */
+.article.footer {
+  background: #2e2e2e !important;
+  color: #fff !important;
+  border-top: none !important;
+  box-shadow: none !important;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  padding: 40px 0 !important;
+}
+
+.article.footer a {
+  color: #fff !important;
+  text-decoration: none;
+}
+
+.article.footer a:hover {
+  text-decoration: underline;
+}
+
+/* Suppress MyST external link icons */
+.article.footer a svg,
+.article.footer a [class*="external"] {
+  display: none !important;
+}
+
+/* Inner wrapper: centered, max-width */
+.nist-footer__inner {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1200px;
+  padding: 0 16px;
+}
+
+/* Menu */
+.nist-footer__menu {
+  margin-bottom: 10px;
+}
+
+.nist-footer__menu ul {
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+  text-align: center;
+}
+
+.nist-footer__menu li {
+  display: inline !important;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.nist-footer__menu li p {
+  display: inline !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+}
+
+.nist-footer__menu li::after {
+  content: ' |';
+  display: inline !important;
+  margin-right: 4px;
+}
+
+.nist-footer__menu li:last-child::after {
+  content: none;
+}
+
+.nist-footer__menu li a {
+  font-weight: normal;
+  margin-right: 4px;
+  white-space: nowrap;
+  display: inline !important;
+}
+
+.nist-footer__menu .link-text {
+  white-space: nowrap !important;
+}
+
+/* Logo: centered below menu */
+.nist-footer__logo {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+}
+
+.nist-footer__logo img {
+  width: 340px !important;
+  height: auto !important;
+  display: block;
+}
+
+/* Widen body text columns (default is 10ch each × 6 = 60ch total) */
+:root {
+  --myst-col-body-max: 11ch;          /* default 10ch */
+  --myst-col-left-margin-max: 12rem;  /* default 9rem */
+  --myst-col-right-sidebar-max: 20rem; /* default 13rem */
+}
+
+/* ============================================================
+   TopNav alignment: give the nav bar the same CSS grid as the
+   article-xl layout so the logo/sidebar edges stay in sync at
+   any viewport width. The nav bar's horizontal padding is
+   removed so the grid starts flush with the viewport edge,
+   matching how the article grid is anchored.
+   ============================================================ */
+@media (min-width: 1280px) {
+  /* Remove horizontal padding so grid aligns with viewport edge */
+  .myst-top-nav {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .myst-top-nav-bar {
+    display: grid !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    align-items: center;
+    column-gap: 0.75rem;
+    grid-template-columns:
+      [screen-start] 0.25rem [screen-inset-start]
+      1fr [page-start]
+      3rem [page-inset-start]
+      minmax(var(--myst-col-left-margin-min,4rem), var(--myst-col-left-margin-max,9rem)) [body-outset-start]
+      3rem [body-start gutter-left-start]
+      1rem [body-inset-start]
+      minmax(var(--myst-col-body-min,8ch), var(--myst-col-body-max,10ch)) [middle-start]
+      minmax(var(--myst-col-body-min,8ch), var(--myst-col-body-max,10ch)) [gutter-left-end]
+      minmax(var(--myst-col-body-min,8ch), var(--myst-col-body-max,10ch))
+      minmax(var(--myst-col-body-min,8ch), var(--myst-col-body-max,10ch)) [gutter-right-start]
+      minmax(var(--myst-col-body-min,8ch), var(--myst-col-body-max,10ch)) [middle-end]
+      minmax(var(--myst-col-body-min,8ch), var(--myst-col-body-max,10ch)) [body-inset-end]
+      1rem [body-end gutter-right-end]
+      3rem [body-outset-end]
+      minmax(var(--myst-col-right-sidebar-min,5rem), var(--myst-col-right-sidebar-max,13rem)) [page-inset-end]
+      3rem [page-end]
+      1fr [screen-inset-end]
+      0.25rem [screen-end];
+  }
+
+  /* Logo + menu button: start at page-start (just past the outer 1fr
+     spacer, ~1.75rem from the left at narrow viewports). The logo tracks
+     the outer spacer exactly in sync with the ToC sidebar — no drift as
+     the window widens. justify-start puts the logo at the left of its cell. */
+  .myst-top-nav-bar > div:first-child {
+    grid-column: page-start / body-start;
+    min-width: unset !important;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  /* Nav links + search: span from body start to page end */
+  .myst-top-nav-bar > div:last-child {
+    grid-column: body-start / page-end;
+    display: flex;
+    align-items: center;
+  }
+}
+
+@media (min-width: 1536px) {
+  .myst-top-nav-bar {
+    column-gap: 1rem;
+    grid-template-columns:
+      [screen-start] 0.5rem [screen-inset-start]
+      1fr [page-start]
+      3rem [page-inset-start]
+      minmax(var(--myst-col-left-margin-min,4rem), var(--myst-col-left-margin-max,9rem)) [body-outset-start]
+      3rem [body-start gutter-left-start]
+      1rem [body-inset-start]
+      minmax(var(--myst-col-body-min,8ch), var(--myst-col-body-max,10ch)) [middle-start]
+      minmax(var(--myst-col-body-min,8ch), var(--myst-col-body-max,10ch)) [gutter-left-end]
+      minmax(var(--myst-col-body-min,8ch), var(--myst-col-body-max,10ch))
+      minmax(var(--myst-col-body-min,8ch), var(--myst-col-body-max,10ch)) [gutter-right-start]
+      minmax(var(--myst-col-body-min,8ch), var(--myst-col-body-max,10ch)) [middle-end]
+      minmax(var(--myst-col-body-min,8ch), var(--myst-col-body-max,10ch)) [body-inset-end]
+      1rem [body-end gutter-right-end]
+      3rem [body-outset-end]
+      minmax(var(--myst-col-right-sidebar-min,5rem), var(--myst-col-right-sidebar-max,13rem)) [page-inset-end]
+      3rem [page-end]
+      1fr [screen-inset-end]
+      0.5rem [screen-end];
+  }
+}
