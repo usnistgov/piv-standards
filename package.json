@@ -1,0 +1,9 @@
+{
+  "name": "piv-standards",
+  "private": true,
+  "type": "module",
+  "description": "Root dependencies for custom MyST plugins and local site tooling.",
+  "dependencies": {
+    "unist-util-visit": "^5.0.0"
+  }
+}

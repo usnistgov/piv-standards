@@ -1,0 +1,36 @@
+version: 1
+project:
+  id: 9868d671-c2e9-4142-97ad-afc88fab3c78
+  toc:
+    - file: SP800-78.md
+  title: Cryptographic Algorithms and Key Sizes for Personal Identity Verification
+  authors:
+    - name: Andrew Regenscheid
+      orcid: 0000-0002-3930-527X
+      affiliation: CSD
+    - name : Hildegard Ferraiolo
+      orcid: 0000-0002-7719-5999
+      affiliation: CSD
+  affiliations:
+    - id: CSD
+      institution: "National Institute of Standards and Technology"
+      department: "Computer Security Division, Information Technology Lab"
+      city: "Gaithersburg"
+      state: "MD"
+      country: "USA"
+  short_title: Cryptographic Algorithms and Key Sizes for PIV
+  subtitle: Development Version
+  options:
+    publication_identifier: NIST SP 800-78
+    publication_number: 800-78
+  plugins:
+    - type: javascript
+      path: ../plugins/appendixNumberingPlugin.mjs
+    - type: javascript
+      path: ../plugins/disableNumberingPlugin.mjs
+  banner: ../nist-campus-banner.jpg
+site:
+  options:
+    style: ../NISTTechPubs.css
+    numbered_references: true
+  template: https://github.com/regenscheid/nyst-article.git

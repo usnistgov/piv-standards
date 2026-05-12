@@ -1,0 +1,86 @@
+image: node:22-bookworm
+
+variables:
+  MYSTMD_REPO: "https://github.com/regenscheid/mystmd.git"
+  MYSTMD_BRANCH: "main"
+  BUN_INSTALL: "$CI_PROJECT_DIR/.bun"
+  # Set BASE_URL if deploying to a subpath (e.g., "/piv-standards").
+  # Leave empty for root deployment.
+  BASE_URL: ""
+
+stages:
+  - build
+  - deploy
+
+cache:
+  key: mystmd-${MYSTMD_BRANCH}
+  paths:
+    - .bun/
+    - mystmd/node_modules/
+    - mystmd/packages/*/dist/
+
+build-site:
+  stage: build
+  before_script:
+    # Install system dependencies for image processing
+    - apt-get update -qq && apt-get install -y -qq imagemagick webp ghostscript > /dev/null
+    # Allow ImageMagick to process PDFs
+    - |
+      if [ -f /etc/ImageMagick-6/policy.xml ]; then
+        sed -i 's@<policy domain="coder" rights="none" pattern="PDF" />@<policy domain="coder" rights="read|write" pattern="PDF" />@' /etc/ImageMagick-6/policy.xml
+      fi
+    # Install Bun
+    - curl -fsSL https://bun.sh/install | bash
+    - export PATH="$BUN_INSTALL/bin:$PATH"
+  script:
+    - export PATH="$BUN_INSTALL/bin:$PATH"
+
+    # Clone and build mystmd from source
+    - |
+      if [ -d mystmd/.git ]; then
+        cd mystmd && git fetch origin "$MYSTMD_BRANCH" && git reset --hard "origin/$MYSTMD_BRANCH" && cd ..
+      else
+        rm -rf mystmd
+        git clone --depth 1 --branch "$MYSTMD_BRANCH" "$MYSTMD_REPO" mystmd
+      fi
+    - cd mystmd
+    - bun install
+    - bun run build
+    - cd ..
+
+    # Create a wrapper so 'myst' invokes the locally-built CLI
+    - printf '#!/bin/sh\nnode "$CI_PROJECT_DIR/mystmd/packages/mystmd/dist/myst.cjs" "$@"\n' > /usr/local/bin/myst
+    - chmod +x /usr/local/bin/myst
+    - myst --version
+
+    # Install project dependencies (plugins use unist-util-visit)
+    - npm ci
+
+    # Clear cached templates to pick up any template changes
+    - rm -rf _build/templates
+
+    # Build the site
+    - export BASE_URL="$BASE_URL"
+    # Start the content server in the background
+    - HOST=0.0.0.0 myst start --headless --keep-host &
+    - sleep 5
+    # Build static HTML from the running content server
+    - CONTENT_CDN="http://localhost:3100" HOST=127.0.0.1 myst build --html
+
+    # Move static HTML output to public/ for pages artifact
+    - mv _build/html public
+  artifacts:
+    paths:
+      - public/
+    expire_in: 1 hour
+
+pages:
+  image: busybox:latest
+  stage: deploy
+  script:
+    - echo "Deploying GitLab Pages..."
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH

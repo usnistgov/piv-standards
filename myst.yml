@@ -1,0 +1,55 @@
+version: 1
+project:
+  title: PIV Standards and Guidelines
+  toc:
+    - file: index.md
+    - file: pqc-overview.md
+    - file: 800-73pt1/SP800-73pt1.md
+    - file: 800-73pt2/SP800-73pt2.md
+    - file: 800-78/SP800-78.md
+    - file: contributing.md
+#  authors:
+#    - name: Andrew Regenscheid
+#      orcid: 0000-0002-3930-527X
+#      affiliation: CSD
+#    - name: Ryan Galluzzo
+#      orcid: 0000-0003-0304-4239
+#      affiliation: ACD
+  affiliations:
+    - id: CSD
+      institution: "National Institute of Standards and Technology"
+      department: "Computer Security Division, Information Technology Lab"
+      city: "Gaithersburg"
+      state: "MD"
+      country: "USA"
+    - id: ACD
+      institution: "National Institute of Standards and Technology"
+      department: "Applied Cybersecurity Division, Information Technology Lab"
+      city: "Gaithersburg"
+      state: "MD"
+      country: "USA"
+  short_title: PIV Standards and Guidelines
+  subtitle: "Working Draft for PQC"
+  plugins:
+    - type: javascript
+      path: ./plugins/appendixNumberingPlugin.mjs
+    - type: javascript
+      path: ./plugins/disableNumberingPlugin.mjs
+  banner: ./nist-campus-banner.jpg
+  github: https://github.com/usnistgov/piv-standards
+site:
+  title: PIV Standards and Guidelines- PQC Drafts
+  options:
+    hide_toc: false
+    outline_maxdepth: 3
+    outline_collapse_depth: 1
+    logo: ./nist-nav-logo-white.svg
+    logo_url: https://www.nist.gov
+    favicon: piv-favicon.ico
+    style: ./NISTTechPubs.css
+    numbered_references: true
+  template: https://github.com/regenscheid/nyst-book.git
+  parts:
+    footer: _nist-footer.md
+    primary_sidebar_footer: |
+      [![NIST CSRC](nist-logo-csrc-black.svg)](https://csrc.nist.gov)

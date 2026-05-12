@@ -1,0 +1,105 @@
+name: Build and Deploy Site
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install system dependencies
+        env:
+          DEBIAN_FRONTEND: noninteractive
+          NEEDRESTART_MODE: a
+        run: |
+          set -x
+          # Stop unattended-upgrades so it doesn't hold the dpkg lock.
+          sudo systemctl stop unattended-upgrades.service || true
+          sudo systemctl mask unattended-upgrades.service || true
+          sudo killall -wq unattended-upgr || true
+          # Wait for any in-progress apt/dpkg to release the lock.
+          for i in $(seq 1 60); do
+            if ! sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1 \
+              && ! sudo fuser /var/lib/dpkg/lock >/dev/null 2>&1 \
+              && ! sudo fuser /var/lib/apt/lists/lock >/dev/null 2>&1; then
+              break
+            fi
+            echo "waiting for dpkg/apt lock... ($i)"
+            sleep 2
+          done
+          APT_OPTS="-o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30"
+          sudo apt-get $APT_OPTS update
+          sudo apt-get $APT_OPTS install -y --no-install-recommends imagemagick webp ghostscript
+          # Allow ImageMagick to process PDFs
+          if [ -f /etc/ImageMagick-6/policy.xml ]; then
+            sudo sed -i 's@<policy domain="coder" rights="none" pattern="PDF" />@<policy domain="coder" rights="read|write" pattern="PDF" />@' /etc/ImageMagick-6/policy.xml
+          fi
+
+      # Cache mystmd build
+      - name: Cache mystmd
+        uses: actions/cache@v4
+        with:
+          path: mystmd
+          key: ${{ runner.os }}-mystmd-${{ hashFiles('.github/workflows/deploy.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-mystmd-
+
+      - name: Clone and build mystmd fork
+        run: |
+          if [ -d mystmd/.git ]; then
+            cd mystmd && git fetch origin main && git reset --hard origin/main && cd ..
+          else
+            rm -rf mystmd
+            git clone --depth 1 --branch main https://github.com/regenscheid/mystmd.git
+          fi
+          cd mystmd
+          bun install
+          bun run build
+
+      - name: Create myst CLI wrapper
+        run: |
+          sudo bash -c "printf '#!/bin/sh\nnode \"${{ github.workspace }}/mystmd/packages/mystmd/dist/myst.cjs\" \"\$@\"\n' > /usr/local/bin/myst"
+          sudo chmod +x /usr/local/bin/myst
+          myst --version
+
+      - name: Install project dependencies
+        run: npm ci
+
+      - name: Clear cached templates
+        run: rm -rf _build/templates
+
+      - name: Build site
+        run: |
+          export BASE_URL="/piv-standards"
+          myst start --headless --keep-host &
+          sleep 5
+          CONTENT_CDN="http://localhost:3100" myst build --html
+
+      - name: Archive site
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-build
+          path: _build/html
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        if: ${{ github.ref == 'refs/heads/main' }}
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: _build/html
+          publish_branch: nist-pages
+          user_name: "github-actions[bot]"
+          user_email: "github-actions[bot]@users.noreply.github.com"
+          commit_message: ${{ github.event.head_commit.message }}

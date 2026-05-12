@@ -1,0 +1,50 @@
+version: 1
+project:
+  id: 9868d671-c2e9-4142-97ad-afc88fab3732
+  toc:
+    - file: SP800-73pt2.md
+  title: PIV Card Application Card Command Interface
+  authors:
+    - name : Hildegard Ferraiolo
+      orcid: 0000-0002-7719-5999
+      affiliation: CSD
+    - name: Ketan Mehta
+      orcid: 0009-0001-1191-8656
+      affiliation: CSD
+    - name: Salvatore Francomacaro
+      orcid: 0009-0009-0487-2520
+      affiliation: CSD
+    - name: Ramaswamy Chandramouli
+      orcid: 0000-0002-7387-5858
+      affiliation: CSD
+    - name: Sarbari Gupta
+      orcid: 0000-0003-1101-0856
+      affiliation: Electrosoft
+  affiliations:
+    - id: CSD
+      institution: "National Institute of Standards and Technology"
+      department: "Computer Security Division, Information Technology Lab"
+      city: "Gaithersburg"
+      state: "MD"
+      country: "USA"
+    - id: Electrosoft
+      institution: "Electrosoft Services Inc."
+      city: Reston
+      state: "VA"
+      country: USA
+  short_title: Interfaces for Personal Identity Verification
+  subtitle: "Part 2- PIV Card Application Card Command Interface"
+  options:
+    publication_identifier: NIST SP 800-73pt2
+    publication_number: 800-73pt2
+  plugins:
+    - type: javascript
+      path: ../plugins/appendixNumberingPlugin.mjs
+    - type: javascript
+      path: ../plugins/disableNumberingPlugin.mjs
+  banner: ../nist-campus-banner.jpg
+site:
+  options:
+    style: ../NISTTechPubs.css
+    numbered_references: true
+  template: https://github.com/regenscheid/nyst-article.git
